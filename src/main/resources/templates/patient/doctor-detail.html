@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Book Appointment')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+<div class="container py-4">
+    <a class="text-decoration-none" th:href="@{/patient/doctors}">&larr; Back to search</a>
+
+    <div class="card shadow-sm mt-2 mb-4">
+        <div class="card-body">
+            <h3 class="mb-1" th:text="${doctor.name}">Dr. Name</h3>
+            <span class="badge text-bg-info" th:text="${doctor.specialty}">Specialty</span>
+            <p class="mt-2 mb-0 text-muted">
+                <span th:text="${doctor.experienceYears} + ' years of experience'">5 years</span> &middot;
+                Fee: <strong th:text="${#numbers.formatDecimal(doctor.fee, 1, 'COMMA', 2, 'POINT')}">500.00</strong>
+            </p>
+        </div>
+    </div>
+
+    <h5 class="mb-3">Available slots</h5>
+
+    <!-- One card per date; each time is a small form that POSTs the slot id -->
+    <div class="card shadow-sm mb-3" th:each="entry : ${slotsByDate}">
+        <div class="card-body">
+            <h6 class="mb-3" th:text="${#temporals.format(entry.key, 'EEEE, dd MMMM yyyy')}">Monday, 01 January 2026</h6>
+            <div class="d-flex flex-wrap gap-2">
+                <form th:each="row : ${entry.value}" method="post" class="m-0"
+                      th:action="@{/patient/doctors/{d}/slots/{s}/book(d=${doctor.id},s=${row.id})}"
+                      onsubmit="return confirm('Book this appointment?');">
+                    <button type="submit" class="btn btn-outline-primary"
+                            th:text="${#temporals.format(row.time, 'hh:mm a')}">09:00 AM</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <p class="text-muted" th:if="${#maps.isEmpty(slotsByDate)}">This doctor has no free slots right now. Please check again later.</p>
+</div>
+</body>
+</html>

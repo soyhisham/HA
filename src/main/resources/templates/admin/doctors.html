@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Manage Doctors')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Doctors</h2>
+        <a class="btn btn-primary" th:href="@{/admin/doctors/new}">+ Add doctor</a>
+    </div>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Name</th><th>Specialty</th><th>Experience</th><th>Fee</th><th>Login email</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="d : ${doctors}">
+                    <td th:text="${d.name}">Dr. Name</td>
+                    <td th:text="${d.specialty}">Cardiology</td>
+                    <td th:text="${d.experienceYears} + ' yrs'">5 yrs</td>
+                    <td th:text="${#numbers.formatDecimal(d.fee, 1, 'COMMA', 2, 'POINT')}">500.00</td>
+                    <td th:text="${d.user.email}">email</td>
+                    <td class="text-end text-nowrap">
+                        <a class="btn btn-sm btn-outline-primary" th:href="@{/admin/doctors/{id}/slots(id=${d.id})}">Slots</a>
+                        <a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/doctors/{id}/edit(id=${d.id})}">Edit</a>
+                        <form class="d-inline" method="post" th:action="@{/admin/doctors/{id}/delete(id=${d.id})}"
+                              onsubmit="return confirm('Delete this doctor and all their slots?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(doctors)}">
+                    <td colspan="6" class="text-center text-muted py-4">No doctors yet. Click "Add doctor" to create one.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

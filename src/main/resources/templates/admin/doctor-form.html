@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Doctor Form')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h3 class="mb-3" th:text="${editing} ? 'Edit doctor' : 'Add doctor'">Add doctor</h3>
+
+                    <!-- One shared form: the action URL depends on whether we are adding or editing -->
+                    <form th:object="${doctorForm}" method="post" novalidate
+                          th:action="${editing} ? @{/admin/doctors/{id}/edit(id=${doctorId})} : @{/admin/doctors}">
+                        <div class="mb-3">
+                            <label class="form-label" for="fullName">Full name</label>
+                            <input type="text" class="form-control" th:field="*{fullName}"
+                                   th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{fullName}"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="email">Login email</label>
+                                <input type="email" class="form-control" th:field="*{email}"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                                <div class="invalid-feedback" th:errors="*{email}"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="phone">Phone</label>
+                                <input type="text" class="form-control" th:field="*{phone}"
+                                       th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid'">
+                                <div class="invalid-feedback" th:errors="*{phone}"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="password">
+                                Password <span class="text-muted small" th:if="${editing}">(leave blank to keep the current one)</span>
+                            </label>
+                            <input type="password" class="form-control" th:field="*{password}" autocomplete="new-password"
+                                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{password}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="specialty">Specialty</label>
+                            <input type="text" class="form-control" th:field="*{specialty}" list="specialtyOptions"
+                                   th:classappend="${#fields.hasErrors('specialty')} ? 'is-invalid'">
+                            <datalist id="specialtyOptions">
+                                <option value="Cardiology"></option>
+                                <option value="Dermatology"></option>
+                                <option value="ENT"></option>
+                                <option value="General Medicine"></option>
+                                <option value="Gynecology"></option>
+                                <option value="Neurology"></option>
+                                <option value="Orthopedics"></option>
+                                <option value="Pediatrics"></option>
+                                <option value="Psychiatry"></option>
+                            </datalist>
+                            <div class="invalid-feedback" th:errors="*{specialty}"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="fee">Consultation fee</label>
+                                <input type="number" step="0.01" min="0" class="form-control" th:field="*{fee}"
+                                       th:classappend="${#fields.hasErrors('fee')} ? 'is-invalid'">
+                                <div class="invalid-feedback" th:errors="*{fee}"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="experienceYears">Experience (years)</label>
+                                <input type="number" min="0" max="60" class="form-control" th:field="*{experienceYears}"
+                                       th:classappend="${#fields.hasErrors('experienceYears')} ? 'is-invalid'">
+                                <div class="invalid-feedback" th:errors="*{experienceYears}"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a class="btn btn-outline-secondary" th:href="@{/admin/doctors}">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

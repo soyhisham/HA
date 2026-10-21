@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Time Slots')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+<div class="container py-4">
+    <a class="text-decoration-none" th:href="@{/admin/doctors}">&larr; Back to doctors</a>
+    <h2 class="mt-2 mb-4">Time slots: <span th:text="${doctor.name}">Doctor</span>
+        <small class="text-muted fs-6" th:text="${doctor.specialty}">Specialty</small></h2>
+
+    <div class="row g-4">
+        <!-- Add slots -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">Add slots</h5>
+                    <p class="small text-muted">Choose a date and working hours. One slot is created every chosen interval
+                        (e.g. 09:00 to 12:00 every 30 minutes gives 6 slots).</p>
+                    <form th:action="@{/admin/doctors/{id}/slots(id=${doctor.id})}" th:object="${slotForm}" method="post" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label" for="slotDate">Date</label>
+                            <input type="date" class="form-control" th:field="*{slotDate}"
+                                   th:classappend="${#fields.hasErrors('slotDate')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{slotDate}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="startTime">From</label>
+                            <input type="time" class="form-control" th:field="*{startTime}"
+                                   th:classappend="${#fields.hasErrors('startTime')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{startTime}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="endTime">To</label>
+                            <input type="time" class="form-control" th:field="*{endTime}"
+                                   th:classappend="${#fields.hasErrors('endTime')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{endTime}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="intervalMinutes">Slot length</label>
+                            <select class="form-select" th:field="*{intervalMinutes}"
+                                    th:classappend="${#fields.hasErrors('intervalMinutes')} ? 'is-invalid'">
+                                <option value="15">15 minutes</option>
+                                <option value="20">20 minutes</option>
+                                <option value="30">30 minutes</option>
+                                <option value="45">45 minutes</option>
+                                <option value="60">60 minutes</option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{intervalMinutes}"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Add slots</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Existing slots -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">Upcoming slots</h5>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light">
+                            <tr><th>Date</th><th>Time</th><th>Status</th><th class="text-end">Action</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="row : ${rows}">
+                                <td th:text="${#temporals.format(row.date, 'EEE, dd MMM yyyy')}">Mon, 01 Jan 2026</td>
+                                <td th:text="${#temporals.format(row.time, 'hh:mm a')}">09:00 AM</td>
+                                <td>
+                                    <span class="badge text-bg-warning" th:if="${row.booked}">Booked</span>
+                                    <span class="badge text-bg-success" th:unless="${row.booked}">Available</span>
+                                </td>
+                                <td class="text-end">
+                                    <form method="post" class="d-inline"
+                                          th:action="@{/admin/doctors/{d}/slots/{s}/delete(d=${doctor.id},s=${row.id})}"
+                                          onsubmit="return confirm('Delete this slot?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" th:disabled="${row.booked}">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(rows)}">
+                                <td colspan="4" class="text-center text-muted py-4">No upcoming slots yet.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

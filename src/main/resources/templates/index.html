@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Home')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container py-5 text-center">
+    <h1 class="display-5">Hospital Appointment Booking</h1>
+    <p class="lead text-muted">Find a doctor, pick a time, and book your appointment online.</p>
+    <div sec:authorize="isAnonymous()" class="mt-4">
+        <a class="btn btn-primary btn-lg me-2" th:href="@{/register}">Create an account</a>
+        <a class="btn btn-outline-primary btn-lg" th:href="@{/login}">Login</a>
+    </div>
+</div>
+</body>
+</html>

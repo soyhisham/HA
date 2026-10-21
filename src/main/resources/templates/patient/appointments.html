@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Appointments')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">My appointments</h2>
+        <a class="btn btn-primary" th:href="@{/patient/doctors}">Book new</a>
+    </div>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                <tr><th>Doctor</th><th>Specialty</th><th>Date</th><th>Time</th><th>Status</th><th class="text-end">Action</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="a : ${appointments}">
+                    <td th:text="${a.doctor.name}">Dr. Name</td>
+                    <td th:text="${a.doctor.specialty}">Specialty</td>
+                    <td th:text="${#temporals.format(a.appointmentDate, 'EEE, dd MMM yyyy')}">Mon, 01 Jan 2026</td>
+                    <td th:text="${#temporals.format(a.appointmentTime, 'hh:mm a')}">09:00 AM</td>
+                    <td>
+                        <span class="badge text-bg-primary" th:if="${a.status.name() == 'BOOKED'}">Booked</span>
+                        <span class="badge text-bg-success" th:if="${a.status.name() == 'COMPLETED'}">Completed</span>
+                        <span class="badge text-bg-secondary" th:if="${a.status.name() == 'CANCELLED'}">Cancelled</span>
+                    </td>
+                    <td class="text-end">
+                        <!-- Cancel is offered only while the appointment is BOOKED and still in the future -->
+                        <form method="post" class="d-inline" th:if="${a.cancellable}"
+                              th:action="@{/patient/appointments/{id}/cancel(id=${a.id})}"
+                              onsubmit="return confirm('Cancel this appointment?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(appointments)}">
+                    <td colspan="6" class="text-center text-muted py-4">You have no appointments yet.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Doctor Dashboard')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+<div class="container py-4">
+    <h2 class="mb-0" th:text="'Welcome, ' + ${dashboard.doctor.name}">Welcome</h2>
+    <p class="text-muted" th:text="${dashboard.doctor.specialty} + ' | ' + ${#temporals.format(dashboard.today, 'EEEE, dd MMMM yyyy')}">Specialty | Date</p>
+
+    <!-- Older appointments the doctor forgot to complete; shown only when there are some -->
+    <div class="card border-warning shadow-sm mb-4" th:if="${!#lists.isEmpty(dashboard.earlierPending)}">
+        <div class="card-header bg-warning-subtle fw-semibold">Earlier appointments not yet marked completed</div>
+        <div th:replace="~{fragments/appointments :: table(${dashboard.earlierPending}, true, true)}"></div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header fw-semibold">Today's appointments</div>
+        <div th:replace="~{fragments/appointments :: table(${dashboard.todayAppointments}, false, true)}"></div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header fw-semibold">Upcoming appointments</div>
+        <div th:replace="~{fragments/appointments :: table(${dashboard.upcomingAppointments}, true, false)}"></div>
+    </div>
+</div>
+</body>
+</html>

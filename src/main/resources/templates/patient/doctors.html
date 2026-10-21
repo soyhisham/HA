@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Find Doctors')}"></head>
+<body class="bg-light">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+<div class="container py-4">
+    <h2 class="mb-3">Find a doctor</h2>
+
+    <!-- GET form: the chosen specialty becomes ?specialty=... in the URL -->
+    <form method="get" th:action="@{/patient/doctors}" class="row g-2 mb-4">
+        <div class="col-md-6 col-lg-4">
+            <select name="specialty" class="form-select" aria-label="Specialty">
+                <option value="">All specialties</option>
+                <option th:each="s : ${specialties}" th:value="${s}" th:text="${s}"
+                        th:selected="${s == selectedSpecialty}"></option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a class="btn btn-outline-secondary" th:href="@{/patient/doctors}">Reset</a>
+        </div>
+    </form>
+
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-4" th:each="d : ${doctors}">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-1" th:text="${d.name}">Dr. Name</h5>
+                    <span class="badge text-bg-info mb-2" th:text="${d.specialty}">Specialty</span>
+                    <p class="mb-1 text-muted small" th:text="${d.experienceYears} + ' years of experience'">5 years</p>
+                    <p class="mb-3">Fee: <strong th:text="${#numbers.formatDecimal(d.fee, 1, 'COMMA', 2, 'POINT')}">500.00</strong></p>
+                    <a class="btn btn-primary btn-sm" th:href="@{/patient/doctors/{id}(id=${d.id})}">View slots &amp; book</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p class="text-muted mt-3" th:if="${#lists.isEmpty(doctors)}">No doctors found for this specialty.</p>
+</div>
+</body>
+</html>

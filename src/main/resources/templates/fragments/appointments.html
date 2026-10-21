@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Reusable appointment table for the doctor dashboard.
+     rows = list of appointments, showDate = show a Date column, showAction = show "Mark completed" buttons -->
+<div th:fragment="table(rows, showDate, showAction)" class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+        <tr>
+            <th th:if="${showDate}">Date</th>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th th:if="${showAction}" class="text-end">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${rows}">
+            <td th:if="${showDate}" th:text="${#temporals.format(a.appointmentDate, 'EEE, dd MMM yyyy')}">Mon, 01 Jan 2026</td>
+            <td th:text="${#temporals.format(a.appointmentTime, 'hh:mm a')}">09:00 AM</td>
+            <td th:text="${a.patient.fullName}">Patient</td>
+            <td th:text="${a.patient.phone}">0000000000</td>
+            <td>
+                <span class="badge text-bg-primary" th:if="${a.status.name() == 'BOOKED'}">Booked</span>
+                <span class="badge text-bg-success" th:if="${a.status.name() == 'COMPLETED'}">Completed</span>
+            </td>
+            <td th:if="${showAction}" class="text-end">
+                <!-- Offered only for BOOKED appointments whose start time has arrived -->
+                <form method="post" class="d-inline" th:if="${a.completable}"
+                      th:action="@{/doctor/appointments/{id}/complete(id=${a.id})}"
+                      onsubmit="return confirm('Mark this appointment as completed?');">
+                    <button type="submit" class="btn btn-sm btn-success">Mark completed</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(rows)}">
+            <td colspan="6" class="text-center text-muted py-4">Nothing here.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
